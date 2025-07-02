@@ -53,10 +53,10 @@ class CustomTextFormField extends StatelessWidget {
     this.keyboardType,
     this.validatorPattern,
     this.validator,
-    this.isEnabled,
-    this.isClickable,
+    this.isEnabled = true,
+    this.isClickable = true,
     this.minLines,
-    this.maxLines,
+    this.maxLines = 1,
     this.maxCharacters,
     this.onChanged,
     this.onFieldSubmitted,
@@ -68,12 +68,10 @@ class CustomTextFormField extends StatelessWidget {
       CustomTextFormFieldController(
         controller: controller,
         maxCharacters: maxCharacters,
+        isPassword: isPassword,
       ),
       tag: tag,
     );
-
-    cc.initIsPassword(isPassword);
-    cc.maxCharactersListener();
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -91,8 +89,8 @@ class CustomTextFormField extends StatelessWidget {
               controller: controller,
               enabled: isEnabled,
               obscureText: cc.isObscure.value,
-              minLines: minLines ?? maxLines,
-              maxLines: maxLines,
+              minLines: minLines ?? 1,
+              maxLines: cc.isObscure.value ? 1 : (maxLines ?? 1),
               inputFormatters: cc.inputFormatters,
               onChanged: (value) {
                 cc.currentLength.value = value.length;
@@ -105,13 +103,13 @@ class CustomTextFormField extends StatelessWidget {
                 if (validator != null) {
                   return validator!(value);
                 } else if (validatorPattern != null) {
-                  if (value!.isEmpty) {
+                  if (value == null || value.isEmpty) {
                     return errorText ?? "Ce champ est vide";
                   } else if (!RegExp(validatorPattern!).hasMatch(value)) {
                     return errorText ?? "Ce champ est invalide";
                   }
                 } else {
-                  if (value! == "") {
+                  if (value == null || value.isEmpty) {
                     return errorText ?? "Ce champ est vide";
                   }
                 }
@@ -120,16 +118,14 @@ class CustomTextFormField extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: maxCharacters == null
                     ? labelText
-                    : "$labelText (${cc.currentLength.value}/${maxCharacters!})",
+                    : "$labelText (${cc.currentLength.value}/$maxCharacters)",
                 hintText: hintText,
                 prefixIcon: iconData != null ? Icon(iconData) : null,
                 suffixIcon: (isPassword ?? false)
                     ? MouseRegion(
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
-                          onTap: () {
-                            cc.isObscure.value = !cc.isObscure.value;
-                          },
+                          onTap: cc.togglePasswordVisibility,
                           child: Icon(
                             cc.isObscure.value
                                 ? Icons.visibility_off_outlined
@@ -139,11 +135,11 @@ class CustomTextFormField extends StatelessWidget {
                       )
                     : null,
                 floatingLabelBehavior: FloatingLabelBehavior.auto,
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
             ),
           ),
-          if (isClickable == false)
+          if (!(isClickable ?? true))
             Positioned.fill(
               child: Material(color: Colors.transparent, child: Container()),
             ),

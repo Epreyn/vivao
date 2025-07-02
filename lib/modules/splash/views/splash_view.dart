@@ -4,11 +4,14 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controllers/splash_controller.dart';
 
-class SplashView extends GetView<SplashController> {
+class SplashView extends StatelessWidget {
   const SplashView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Forcer l'initialisation du controller
+    final controller = Get.put(SplashController());
+
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Center(

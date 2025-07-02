@@ -5,24 +5,34 @@ import 'package:get/get.dart';
 class CustomTextFormFieldController extends GetxController {
   final TextEditingController? controller;
   final int? maxCharacters;
+  final bool? isPassword;
 
-  CustomTextFormFieldController({this.controller, this.maxCharacters});
+  CustomTextFormFieldController({
+    this.controller,
+    this.maxCharacters,
+    this.isPassword,
+  });
 
-  RxBool isObscure = false.obs;
-
+  late final RxBool isObscure = (isPassword ?? false).obs;
   final RxInt currentLength = 0.obs;
   final List<TextInputFormatter> inputFormatters = [];
 
-  void initIsPassword(bool? isPassword) {
-    if (isPassword != null) {
-      isObscure.value = isPassword;
+  @override
+  void onInit() {
+    super.onInit();
+    maxCharactersListener();
+    if (controller != null) {
+      currentLength.value = controller!.text.length;
     }
   }
 
   void maxCharactersListener() {
     if (maxCharacters != null) {
       inputFormatters.add(LengthLimitingTextInputFormatter(maxCharacters));
-      currentLength.value = controller!.text.length;
     }
+  }
+
+  void togglePasswordVisibility() {
+    isObscure.value = !isObscure.value;
   }
 }

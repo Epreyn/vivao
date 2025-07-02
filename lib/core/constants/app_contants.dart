@@ -9,7 +9,7 @@ class AppConstants {
   static const String languageKey = 'language';
 
   // Durations
-  static const Duration splashDuration = Duration(seconds: 3);
+  static const Duration splashDuration = Duration(seconds: 0);
   static const Duration animationDuration = Duration(milliseconds: 300);
   static const Duration snackbarDuration = Duration(seconds: 3);
 
